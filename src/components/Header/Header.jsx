@@ -1,7 +1,8 @@
+import { Autocomplete } from "@react-google-maps/api";
 import { useRef } from "react";
 import { Search } from "lucide-react";
 
-const Header = () => {
+const Header = ({ onPlaceChanged, onLoad }) => {
   const inputRef = useRef(null);
 
   return (
@@ -16,6 +17,7 @@ const Header = () => {
             Your journey begins here ✈️
           </p>
 
+          {/* <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}> */}
           <div className="relative bg-white rounded-lg px-3 py-2 flex items-center w-72 text-gray-800 shadow-sm border border-gray-300">
             <Search className="w-5 h-5 text-indigo-400 mr-2" />
 
@@ -42,6 +44,7 @@ const Header = () => {
               className="outline-none w-full bg-transparent placeholder-gray-500"
             />
           </div>
+          {/* </Autocomplete> */}
         </div>
       </div>
     </header>
