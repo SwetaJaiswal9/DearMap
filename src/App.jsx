@@ -1,7 +1,7 @@
 import Header from "./components/Header/Header";
 import Map from "./components/Map/Map";
 import List from "./components/List/List";
-import Places from "./components/Places/Places";
+import PlaceDetails from "./components/PlaceDetails/PlaceDetails";
 
 const App = () => {
   return (
@@ -18,7 +18,7 @@ const App = () => {
         </div>
       </div>
 
-      <Places />
+      <PlaceDetails />
     </main>
   );
 };
