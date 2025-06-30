@@ -7,12 +7,28 @@ import { getPlacesData } from "./api";
 
 const App = () => {
   const [places, setPlaces] = useState([]);
+  const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
+  const [bounds, setBounds] = useState(null);
+
   useEffect(() => {
-    getPlacesData().then((data) => {
-      console.log(data);
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude, longitude } }) => {
+        setCoordinates({ lat: latitude, lng: longitude });
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    console.log("coordinates", coordinates);
+    console.log("bounds", bounds);
+    if (bounds?.sw && bounds?.ne) {
+    getPlacesData(bounds.sw, bounds.ne).then((data) => {
+      console.log("data", data);
       setPlaces(data);
     });
-  }, []);
+  }
+  }, [coordinates, bounds]);
+
   return (
     <main className="w-full">
       <Header />
@@ -23,7 +39,12 @@ const App = () => {
         </div>
 
         <div>
-          <Map />
+          <Map
+            setCoordinates={setCoordinates}
+            setBounds={setBounds}
+            coordinates={coordinates}
+            bounds={bounds}
+          />
         </div>
       </div>
 

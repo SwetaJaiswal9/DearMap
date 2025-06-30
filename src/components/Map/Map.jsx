@@ -6,9 +6,7 @@ const containerStyle = {
   height: "85vh",
 };
 
-const center = { lat: 51.5072, lng: -0.1276 };
-
-const Map = () => {
+const Map = ({ setCoordinates, setBounds, coordinates, bounds }) => {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     // libraries: ["marker"],
@@ -30,23 +28,49 @@ const Map = () => {
     if (isLoaded && map && window.google && window.google.maps?.marker) {
       new window.google.maps.Marker({
         map,
-        position: center,
+        position: coordinates,
       });
     }
+
     // {
     //   markerRef.current = new window.google.maps.marker.AdvancedMarkerElement({
     //     map,
-    //     position: center,
+    //     position: coordinates,
     //   });
     // }
   }, [isLoaded, map]);
+
+  const handleIdle = () => {
+    const newBounds = map?.getBounds();
+    const ne = newBounds?.getNorthEast();
+    const sw = newBounds?.getSouthWest();
+
+    const updatedBounds = {
+      ne: { lat: ne?.lat(), lng: ne?.lng() },
+      sw: { lat: sw?.lat(), lng: sw?.lng() },
+    };
+
+    if (
+      !bounds ||
+      bounds.ne.lat !== updatedBounds.ne.lat ||
+      bounds.ne.lng !== updatedBounds.ne.lng ||
+      bounds.sw.lat !== updatedBounds.sw.lat ||
+      bounds.sw.lng !== updatedBounds.sw.lng
+    ) {
+      setBounds(updatedBounds);
+      setCoordinates({
+        lat: map.getCenter().lat(),
+        lng: map.getCenter().lng(),
+      });
+    }
+  };
 
   return (
     <div className="rounded-md shadow-md overflow-hidden border border-gray-300">
       {isLoaded && (
         <GoogleMap
           mapContainerStyle={containerStyle}
-          center={center}
+          center={coordinates}
           zoom={10}
           onLoad={onLoad}
           onUnmount={onUnmount}
@@ -54,6 +78,7 @@ const Map = () => {
             disableDefaultUI: true,
             zoomControl: true,
           }}
+          onIdle={handleIdle}
         ></GoogleMap>
       )}
     </div>
