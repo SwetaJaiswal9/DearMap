@@ -41,6 +41,8 @@ const Map = ({ setCoordinates, setBounds, coordinates, bounds }) => {
   }, [isLoaded, map]);
 
   const handleIdle = () => {
+    if (!map) return;
+    
     const newBounds = map?.getBounds();
     const ne = newBounds?.getNorthEast();
     const sw = newBounds?.getSouthWest();
