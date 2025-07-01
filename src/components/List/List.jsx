@@ -1,13 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PlaceDetails from "../PlaceDetails/PlaceDetails";
 import { motion } from "framer-motion";
 
 const List = ({ places, childClicked, isLoading }) => {
   const [type, setType] = useState("cafes");
   const [sortBy, setSortBy] = useState("distance");
-  // const [rating, setRating] = useState("");
+
+  const listRef = useRef([]);
 
   console.log({ childClicked });
+
+  useEffect(() => {
+    if (childClicked !== null && listRef.current[childClicked]) {
+      listRef.current[childClicked].scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [childClicked]);
 
   return (
     <div className="p-6">
@@ -48,21 +58,6 @@ const List = ({ places, childClicked, isLoading }) => {
             </div>
 
             <div className="flex-1">
-              {/* <label htmlFor="rating" className="block text-sm font-medium text-gray-700 mb-1">
-                Rating
-              </label>
-              <select
-                id="rating"
-                value={rating}
-                onChange={(e) => setRating(e.target.value)}
-                className="w-full border-gray-300 rounded-md shadow-sm p-2"
-              >
-                <option value="">All</option>
-                <option value="3">Above 3.0</option>
-                <option value="4">Above 4.0</option>
-                <option value="4.5">Above 4.5</option>
-              </select> */}
-
               <label
                 htmlFor="sortBy"
                 className="block text-sm font-medium text-gray-700 mb-1"
@@ -92,7 +87,9 @@ const List = ({ places, childClicked, isLoading }) => {
                   transition={{ duration: 0.3, delay: i * 0.05 }}
                   className="p-4 bg-white rounded-xl shadow hover:shadow-lg transition-all duration-300"
                 >
-                  <PlaceDetails place={place} />
+                  <div key={i} ref={(el) => (listRef.current[i] = el)}>
+                    <PlaceDetails place={place} />
+                  </div>
                 </motion.div>
               ))}
           </div>
