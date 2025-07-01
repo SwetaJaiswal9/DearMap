@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import PlaceDetails from '../PlaceDetails/PlaceDetails';
 import { motion } from 'framer-motion';
 
-const List = ({ places }) => {
+const List = ({ places, childClicked }) => {
   const [type, setType] = useState("restaurants");
   const [rating, setRating] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  console.log({childClicked});
 
   return (
     <div className="p-6">

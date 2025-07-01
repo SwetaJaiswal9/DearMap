@@ -13,7 +13,7 @@ const PlaceDetails = ({ place }) => {
         className="w-full h-[220px] object-cover"
       />
 
-      {/* Content */}
+      {/* Name */}
       <div className="p-4 space-y-2">
         <h2 className="text-lg font-semibold text-gray-800">{place?.name}</h2>
 
@@ -22,14 +22,17 @@ const PlaceDetails = ({ place }) => {
           <div className="flex items-center gap-1 text-yellow-500">
             <FaStar className="text-sm" />
             <span>{place?.rating || "N/A"}</span>
-            <span className="text-gray-400 text-xs">({place?.num_reviews} reviews)</span>
+            <span className="text-gray-400 text-xs">
+              ({place?.num_reviews} reviews)
+            </span>
           </div>
           <span className="text-xs text-gray-500">{place?.price_level}</span>
         </div>
 
         {/* Ranking */}
         <div className="text-xs text-gray-500">
-          <strong className="font-medium text-gray-600">Ranking:</strong> {place?.ranking}
+          <strong className="font-medium text-gray-600">Ranking:</strong>{" "}
+          {place?.ranking}
         </div>
 
         {/* Cuisine Tags */}
