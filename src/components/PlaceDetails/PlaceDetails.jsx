@@ -1,4 +1,4 @@
-import { MdLocationOn, MdPhone } from "react-icons/md";
+import { MapPin, Phone } from "lucide-react";
 import { FaGlobe, FaInstagram, FaTwitter } from "react-icons/fa";
 import barImg from "../../assets/bar.jpg";
 
@@ -21,14 +21,14 @@ const PlaceDetails = ({ place }) => {
 
         {place?.location?.formatted_address && (
           <p className="flex items-center gap-1 text-sm text-gray-600">
-            <MdLocationOn className="text-emerald-500" />
+            <MapPin className="text-emerald-500 w-4 h-4" />
             {place.location.formatted_address}
           </p>
         )}
 
         {place?.tel && (
           <p className="flex items-center gap-1 text-sm text-gray-600">
-            <MdPhone className="text-emerald-500" />
+            <Phone className="text-emerald-500 w-4 h-4" />
             {place.tel}
           </p>
         )}

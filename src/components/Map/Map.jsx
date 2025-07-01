@@ -6,7 +6,7 @@ import {
 } from "@react-google-maps/api";
 import { useEffect, useRef, useState, useCallback } from "react";
 import barImg from "../../assets/bar.jpg";
-import { MdLocationOn } from "react-icons/md";
+import { MapPin } from "lucide-react";
 
 const containerStyle = {
   width: "100%",
@@ -39,35 +39,6 @@ const Map = ({
     setMap(null);
   }, []);
 
-  // const handleIdle = () => {
-  //   if (!map) return;
-
-  //   const newBounds = map?.getBounds();
-  //   const ne = newBounds?.getNorthEast();
-  //   const sw = newBounds?.getSouthWest();
-
-  //   const updatedBounds = {
-  //     ne: { lat: ne?.lat(), lng: ne?.lng() },
-  //     sw: { lat: sw?.lat(), lng: sw?.lng() },
-  //   };
-
-  //   if (!bounds || JSON.stringify(bounds) !== JSON.stringify(updatedBounds)) {
-  //     setBounds(updatedBounds);
-
-  //     const newCenter = {
-  //       lat: map.getCenter().lat(),
-  //       lng: map.getCenter().lng(),
-  //     };
-
-  //     if (
-  //       coordinates.lat !== newCenter.lat ||
-  //       coordinates.lng !== newCenter.lng
-  //     ) {
-  //       setCoordinates(newCenter);
-  //     }
-  //   }
-  // };
-
   const handleIdle = () => {
     if (!map) return;
 
@@ -89,7 +60,7 @@ const Map = ({
       if (!coordinates) return true;
       const latDiff = Math.abs(coordinates.lat - newCenter.lat);
       const lngDiff = Math.abs(coordinates.lng - newCenter.lng);
-      return latDiff > 0.005  || lngDiff > 0.005 ;
+      return latDiff > 0.005 || lngDiff > 0.005;
     };
 
     const isBoundsChanged = () => {
@@ -114,7 +85,7 @@ const Map = ({
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={coordinates}
-          zoom={10}
+          zoom={window.innerWidth < 640 ? 13 : 15}
           onLoad={onLoad}
           onUnmount={onUnmount}
           onIdle={handleIdle}
@@ -160,24 +131,27 @@ const Map = ({
               }}
               onCloseClick={() => setSelectedPlaceIndex(null)}
             >
-              <div className="w-56">
-                <h3 className="text-sm font-semibold text-gray-800 truncate">
-                  {places[selectedPlaceIndex].name}
-                </h3>
+              <div className="w-48 rounded-md shadow-md bg-white overflow-hidden border border-gray-200">
                 <img
-                  src={
-                    places[selectedPlaceIndex]?.categories?.[0]?.icon
-                      ? `${places[selectedPlaceIndex].categories[0].icon.prefix}64${places[selectedPlaceIndex].categories[0].icon.suffix}`
-                      : barImg
-                  }
+                  src={barImg}
                   alt={places[selectedPlaceIndex].name}
-                  className="w-full h-24 object-cover rounded mt-2"
+                  className="w-full h-24 object-cover"
                 />
-                {places[selectedPlaceIndex]?.location?.formatted_address && (
-                  <div className="text-xs text-gray-600 mt-2">
-                    📍 {places[selectedPlaceIndex].location.formatted_address}
-                  </div>
-                )}
+
+                <div className="px-2 py-1.5">
+                  <h3 className="text-xs font-semibold text-gray-800 truncate">
+                    {places[selectedPlaceIndex].name}
+                  </h3>
+
+                  {places[selectedPlaceIndex]?.location?.formatted_address && (
+                    <p className="flex items-start gap-1 text-[10px] text-gray-600 mt-1 leading-snug">
+                      <MapPin className="w-3.5 h-3.5 text-emerald-500 mt-[1px]" />
+                      <span>
+                        {places[selectedPlaceIndex].location.formatted_address}
+                      </span>
+                    </p>
+                  )}
+                </div>
               </div>
             </InfoWindow>
           )}

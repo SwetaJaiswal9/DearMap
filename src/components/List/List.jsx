@@ -2,10 +2,15 @@ import React, { useState, useEffect, useRef } from "react";
 import PlaceDetails from "../PlaceDetails/PlaceDetails";
 import { motion } from "framer-motion";
 
-const List = ({ places, childClicked, isLoading }) => {
-  const [type, setType] = useState("cafes");
-  const [sortBy, setSortBy] = useState("distance");
-
+const List = ({
+  places,
+  childClicked,
+  isLoading,
+  type,
+  setType,
+  sortBy,
+  setSortBy,
+}) => {
   const listRef = useRef([]);
 
   console.log({ childClicked });
@@ -50,10 +55,10 @@ const List = ({ places, childClicked, isLoading }) => {
                 onChange={(e) => setType(e.target.value)}
                 className="w-full border-gray-300 rounded-md shadow-sm p-2"
               >
-                <option value="cafes">Cafes</option>
-                <option value="bars">Bars</option>
-                <option value="parks">Parks</option>
-                <option value="movie_theatres">Movie Theatres</option>
+                <option value="4bf58dd8d48988d16d941735">Cafes</option>
+                <option value="4bf58dd8d48988d116941735">Bars</option>
+                <option value="4bf58dd8d48988d163941735">Parks</option>
+                <option value="4bf58dd8d48988d17f941735">Movie Theatres</option>
               </select>
             </div>
 

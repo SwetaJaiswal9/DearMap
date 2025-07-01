@@ -2,7 +2,12 @@ import axios from "axios";
 
 const URL = "/api/places/search";
 
-export const getPlacesData = async (sw, ne) => {
+export const getPlacesData = async (
+  sw,
+  ne,
+  selectedType = "4bf58dd8d48988d16d941735",
+  selectedSortBy = "DISTANCE"
+) => {
   if (
     !sw ||
     !ne ||
@@ -28,16 +33,19 @@ export const getPlacesData = async (sw, ne) => {
       params: {
         ll: `${lat},${lng}`,
         radius: 2000,
-        fsq_category_ids: "4bf58dd8d48988d16d941735",
         limit: 30,
-        sort: "DISTANCE",
-        // fields: "fsq_place_id,name,location,categories,distance",
+        fsq_category_ids: selectedType,
+
+        sort: selectedSortBy,
       },
     });
 
     return response.data.results;
   } catch (error) {
-     console.error("Foursquare API error:", error?.response?.data || error.message);
-  return [];
+    console.error(
+      "Foursquare API error:",
+      error?.response?.data || error.message
+    );
+    return [];
   }
 };

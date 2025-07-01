@@ -11,15 +11,20 @@ const App = () => {
   const [bounds, setBounds] = useState(null);
   const [childClicked, setChildClicked] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [type, setType] = useState("4bf58dd8d48988d16d941735");
+  const [sortBy, setSortBy] = useState("DISTANCE");
 
   const throttledFetchPlaces = useMemo(() => {
-    return throttle(async (sw, ne) => {
-      setIsLoading(true);
-      const data = await getPlacesData(sw, ne);
-      console.log("Fetched Places Data:", data);
-      setIsLoading(false);
-      setPlaces(data);
-    }, 15000);
+    return throttle(
+      async (sw, ne, selectedType = "4bf58dd8d48988d16d941735", selectedSortBy = "DISTANCE") => {
+        setIsLoading(true);
+        const data = await getPlacesData(sw, ne, selectedType, selectedSortBy);
+        console.log("Fetched Places Data:", data);
+        setIsLoading(false);
+        setPlaces(data);
+      },
+      15000
+    );
   }, []);
 
   useEffect(() => {
@@ -43,9 +48,9 @@ const App = () => {
       bounds.ne.lat !== 0 &&
       bounds.ne.lng !== 0
     ) {
-      throttledFetchPlaces(bounds.sw, bounds.ne);
+      throttledFetchPlaces(bounds.sw, bounds.ne, type, sortBy);
     }
-  }, [bounds, throttledFetchPlaces]);
+  }, [bounds, throttledFetchPlaces, type, sortBy]);
 
   return (
     <main className="w-full">
@@ -57,6 +62,10 @@ const App = () => {
             places={places}
             childClicked={childClicked}
             isLoading={isLoading}
+            type={type}
+            setType={setType}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
           />
         </div>
 
