@@ -39,34 +39,74 @@ const Map = ({
     setMap(null);
   }, []);
 
+  // const handleIdle = () => {
+  //   if (!map) return;
+
+  //   const newBounds = map?.getBounds();
+  //   const ne = newBounds?.getNorthEast();
+  //   const sw = newBounds?.getSouthWest();
+
+  //   const updatedBounds = {
+  //     ne: { lat: ne?.lat(), lng: ne?.lng() },
+  //     sw: { lat: sw?.lat(), lng: sw?.lng() },
+  //   };
+
+  //   if (!bounds || JSON.stringify(bounds) !== JSON.stringify(updatedBounds)) {
+  //     setBounds(updatedBounds);
+
+  //     const newCenter = {
+  //       lat: map.getCenter().lat(),
+  //       lng: map.getCenter().lng(),
+  //     };
+
+  //     if (
+  //       coordinates.lat !== newCenter.lat ||
+  //       coordinates.lng !== newCenter.lng
+  //     ) {
+  //       setCoordinates(newCenter);
+  //     }
+  //   }
+  // };
+
   const handleIdle = () => {
     if (!map) return;
 
-    const newBounds = map?.getBounds();
+    const newBounds = map.getBounds();
     const ne = newBounds?.getNorthEast();
     const sw = newBounds?.getSouthWest();
+
+    const newCenter = {
+      lat: map.getCenter().lat(),
+      lng: map.getCenter().lng(),
+    };
 
     const updatedBounds = {
       ne: { lat: ne?.lat(), lng: ne?.lng() },
       sw: { lat: sw?.lat(), lng: sw?.lng() },
     };
 
-    if (!bounds || JSON.stringify(bounds) !== JSON.stringify(updatedBounds)) {
+    const isSubstantialDrag = () => {
+      if (!coordinates) return true;
+      const latDiff = Math.abs(coordinates.lat - newCenter.lat);
+      const lngDiff = Math.abs(coordinates.lng - newCenter.lng);
+      return latDiff > 0.005  || lngDiff > 0.005 ;
+    };
+
+    const isBoundsChanged = () => {
+      if (!bounds) return true;
+      return (
+        Math.abs(bounds.ne.lat - updatedBounds.ne.lat) > 0.01 ||
+        Math.abs(bounds.ne.lng - updatedBounds.ne.lng) > 0.01 ||
+        Math.abs(bounds.sw.lat - updatedBounds.sw.lat) > 0.01 ||
+        Math.abs(bounds.sw.lng - updatedBounds.sw.lng) > 0.01
+      );
+    };
+
+    if (isSubstantialDrag() || isBoundsChanged()) {
+      setCoordinates(newCenter);
       setBounds(updatedBounds);
-
-      const newCenter = {
-        lat: map.getCenter().lat(),
-        lng: map.getCenter().lng(),
-      };
-
-      if (
-        coordinates.lat !== newCenter.lat ||
-        coordinates.lng !== newCenter.lng
-      ) {
-        setCoordinates(newCenter);
-      }
     }
-  }; 
+  };
 
   return (
     <div className="rounded-md shadow-md overflow-hidden border border-gray-300">
@@ -83,36 +123,40 @@ const Map = ({
             zoomControl: true,
           }}
         >
-          {places?.map((place, i) => (
-            <Marker
-              key={i}
-              position={{
-                lat: Number(place.latitude),
-                lng: Number(place.longitude),
-              }}
-              onClick={() => {
-                if (selectedPlaceIndex !== i) {
-                  setChildClicked(i);
-                  setSelectedPlaceIndex(i);
-                }
-              }}
-              icon={{
-                path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
-                fillColor: "#ef4444",
-                fillOpacity: 1,
-                strokeWeight: 1,
-                strokeColor: "#fff",
-                scale: 1.5,
-                anchor: new window.google.maps.Point(12, 24),
-              }}
-            />
-          ))}
+          {places?.map((place, i) => {
+            const lat = Number(place?.latitude);
+            const lng = Number(place?.longitude);
+
+            if (isNaN(lat) || isNaN(lng)) return null;
+
+            return (
+              <Marker
+                key={i}
+                position={{ lat, lng }}
+                onClick={() => {
+                  if (selectedPlaceIndex !== i) {
+                    setChildClicked(i);
+                    setSelectedPlaceIndex(i);
+                  }
+                }}
+                icon={{
+                  path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
+                  fillColor: "#ef4444",
+                  fillOpacity: 1,
+                  strokeWeight: 1,
+                  strokeColor: "#fff",
+                  scale: 1.5,
+                  anchor: new window.google.maps.Point(12, 24),
+                }}
+              />
+            );
+          })}
 
           {selectedPlaceIndex !== null && places[selectedPlaceIndex] && (
             <InfoWindow
               position={{
-                lat: Number(places[selectedPlaceIndex].latitude),
-                lng: Number(places[selectedPlaceIndex].longitude),
+                lat: places[selectedPlaceIndex]?.latitude,
+                lng: places[selectedPlaceIndex]?.longitude,
               }}
               onCloseClick={() => setSelectedPlaceIndex(null)}
             >
@@ -122,16 +166,16 @@ const Map = ({
                 </h3>
                 <img
                   src={
-                    places[selectedPlaceIndex]?.photo
-                      ? places[selectedPlaceIndex].photo.images.large.url
+                    places[selectedPlaceIndex]?.categories?.[0]?.icon
+                      ? `${places[selectedPlaceIndex].categories[0].icon.prefix}64${places[selectedPlaceIndex].categories[0].icon.suffix}`
                       : barImg
                   }
                   alt={places[selectedPlaceIndex].name}
                   className="w-full h-24 object-cover rounded mt-2"
                 />
-                {places[selectedPlaceIndex]?.rating && (
-                  <div className="text-yellow-500 text-xs mt-2 font-medium">
-                    ⭐ {Number(places[selectedPlaceIndex].rating)} / 5
+                {places[selectedPlaceIndex]?.location?.formatted_address && (
+                  <div className="text-xs text-gray-600 mt-2">
+                    📍 {places[selectedPlaceIndex].location.formatted_address}
                   </div>
                 )}
               </div>

@@ -1,26 +1,43 @@
 import axios from "axios";
 
-const URL =
-  "https://travel-advisor.p.rapidapi.com/restaurants/list-in-boundary";
+const URL = "/api/places/search";
 
 export const getPlacesData = async (sw, ne) => {
+  if (
+    !sw ||
+    !ne ||
+    sw.lat === 0 ||
+    sw.lng === 0 ||
+    ne.lat === 0 ||
+    ne.lng === 0
+  ) {
+    console.warn("Skipping API call due to invalid bounds");
+    return [];
+  }
+
+  const lat = (sw.lat + ne.lat) / 2;
+  const lng = (sw.lng + ne.lng) / 2;
+
   try {
-    const {
-      data: { data },
-    } = await axios.get(URL, {
-      params: {
-        bl_latitude: sw.lat,
-        tr_latitude: ne.lat,
-        bl_longitude: sw.lng,
-        tr_longitude: ne.lng,
-      },
+    const response = await axios.get(URL, {
       headers: {
-        "x-rapidapi-key": import.meta.env.VITE_RAPIDAPI_KEY,
-        "x-rapidapi-host": import.meta.env.VITE_RAPIDAPI_HOST,
+        accept: "application/json",
+        "X-Places-Api-Version": "2025-06-17",
+        authorization: `Bearer ${import.meta.env.VITE_FSQ_API_KEY}`,
+      },
+      params: {
+        ll: `${lat},${lng}`,
+        radius: 2000,
+        fsq_category_ids: "4bf58dd8d48988d16d941735",
+        limit: 30,
+        sort: "DISTANCE",
+        // fields: "fsq_place_id,name,location,categories,distance",
       },
     });
-    return data;
+
+    return response.data.results;
   } catch (error) {
-    console.error("Failed to fetch places data:", error);
+     console.error("Foursquare API error:", error?.response?.data || error.message);
+  return [];
   }
 };
