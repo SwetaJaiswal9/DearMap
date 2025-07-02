@@ -1,9 +1,35 @@
-import { Autocomplete } from "@react-google-maps/api";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Search } from "lucide-react";
 
-const Header = ({ onPlaceChanged, onLoad }) => {
+const Header = ({ isLoaded, onPlaceChanged }) => {
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    const autoCompleteEl = inputRef.current;
+
+    if (!autoCompleteEl || !autoCompleteEl.addEventListener) return;
+
+    const handlePlaceChanged = () => {
+      const place = autoCompleteEl.getPlace?.();
+      if (place && place.geometry) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        onPlaceChanged({ lat, lng });
+      }
+    };
+
+    autoCompleteEl.addEventListener(
+      "gmpx-placeautocomplete:place_changed",
+      handlePlaceChanged
+    );
+
+    return () => {
+      autoCompleteEl.removeEventListener(
+        "gmpx-placeautocomplete:place_changed",
+        handlePlaceChanged
+      );
+    };
+  }, [onPlaceChanged]);
 
   return (
     <header className="bg-gradient-to-r from-indigo-200 via-purple-100 to-teal-100 text-gray-900 shadow-md">
@@ -17,34 +43,20 @@ const Header = ({ onPlaceChanged, onLoad }) => {
             Your journey begins here ✈️
           </p>
 
-          {/* <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}> */}
-          <div className="relative bg-white rounded-lg px-3 py-2 flex items-center w-72 text-gray-800 shadow-sm border border-gray-300">
-            <Search className="w-5 h-5 text-indigo-400 mr-2" />
+          {isLoaded && (
+            <gmpx-placeautocomplete ref={inputRef} style={{ all: "unset" }}>
+              <div className="relative bg-white rounded-lg px-3 py-2 flex items-center w-72 text-gray-800 shadow-sm border border-gray-300">
+                <Search className="w-5 h-5 text-indigo-400 mr-2" />
 
-            {/* <MagnifyingGlassIcon className="w-5 h-5 text-gray-500 mr-2" /> */}
-
-            {/* <svg
-                className="w-5 h-5 text-gray-500 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-4.35-4.35M16 10a6 6 0 11-12 0 6 6 0 0112 0z"
+                <input
+                  // ref={inputRef}
+                  type="text"
+                  placeholder="Search..."
+                  className="outline-none w-full bg-transparent placeholder-gray-500"
                 />
-              </svg> */}
-
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="Search..."
-              className="outline-none w-full bg-transparent placeholder-gray-500"
-            />
-          </div>
-          {/* </Autocomplete> */}
+              </div>
+            </gmpx-placeautocomplete>
+          )}
         </div>
       </div>
     </header>

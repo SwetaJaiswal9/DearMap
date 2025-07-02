@@ -4,6 +4,9 @@ import Map from "./components/Map/Map";
 import List from "./components/List/List";
 import { getPlacesData } from "./api";
 import throttle from "lodash.throttle";
+import { useLoadScript } from "@react-google-maps/api";
+
+const libraries = ["places"];
 
 const App = () => {
   const [places, setPlaces] = useState([]);
@@ -14,9 +17,23 @@ const App = () => {
   const [type, setType] = useState("4bf58dd8d48988d16d941735");
   const [sortBy, setSortBy] = useState("DISTANCE");
 
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries,
+  });
+
+  const handlePlaceChanged = ({ lat, lng }) => {
+    setCoordinates({ lat, lng });
+  };
+
   const throttledFetchPlaces = useMemo(() => {
     return throttle(
-      async (sw, ne, selectedType = "4bf58dd8d48988d16d941735", selectedSortBy = "DISTANCE") => {
+      async (
+        sw,
+        ne,
+        selectedType = "4bf58dd8d48988d16d941735",
+        selectedSortBy = "DISTANCE"
+      ) => {
         setIsLoading(true);
         const data = await getPlacesData(sw, ne, selectedType, selectedSortBy);
         console.log("Fetched Places Data:", data);
@@ -33,7 +50,7 @@ const App = () => {
         setCoordinates({ lat: latitude, lng: longitude });
       },
       () => {
-        //Default Location if permission denied - London
+        //Default fallback - London
         setCoordinates({ lat: 51.5072, lng: -0.1276 });
       }
     );
@@ -46,7 +63,9 @@ const App = () => {
       bounds.sw.lat !== 0 &&
       bounds.sw.lng !== 0 &&
       bounds.ne.lat !== 0 &&
-      bounds.ne.lng !== 0
+      bounds.ne.lng !== 0 &&
+      coordinates.lat !== 0 &&
+      coordinates.lng !== 0
     ) {
       throttledFetchPlaces(bounds.sw, bounds.ne, type, sortBy);
     }
@@ -54,7 +73,7 @@ const App = () => {
 
   return (
     <main className="w-full">
-      <Header />
+      <Header isLoaded={isLoaded} onPlaceChanged={handlePlaceChanged} />
 
       <div className="flex flex-col md:flex-row gap-6 px-4 mt-6">
         <div className="md:w-1/3 w-full">
@@ -70,14 +89,16 @@ const App = () => {
         </div>
 
         <div className="md:w-2/3 w-full">
-          <Map
-            setCoordinates={setCoordinates}
-            setBounds={setBounds}
-            coordinates={coordinates}
-            bounds={bounds}
-            places={places}
-            setChildClicked={setChildClicked}
-          />
+          {isLoaded && (
+            <Map
+              setCoordinates={setCoordinates}
+              setBounds={setBounds}
+              coordinates={coordinates}
+              bounds={bounds}
+              places={places}
+              setChildClicked={setChildClicked}
+            />
+          )}
         </div>
       </div>
     </main>
