@@ -5,6 +5,7 @@ import { MapPin } from "lucide-react";
 import AddPinForm from "./PinForm";
 import { collection, addDoc } from "firebase/firestore";
 import db from "../../utils/firebase";
+import { motion } from "framer-motion";
 
 const containerStyle = {
   width: "100%",
@@ -18,17 +19,21 @@ const Map = ({
   bounds,
   places,
   setChildClicked,
+  customPins,
+  fetchCustomPins,
 }) => {
   const [map, setMap] = useState(null);
   const [selectedPlaceIndex, setSelectedPlaceIndex] = useState(null);
   const [clickedLocation, setClickedLocation] = useState(null);
-  //  const markerRef = useRef(null);
+  const [selectedCustomPin, setSelectedCustomPin] = useState(null);
+  const [drawerPosition, setDrawerPosition] = useState("right");
 
   const handlePinSubmit = async (pinData) => {
     console.log("New Pin Data:", pinData);
     try {
       const docRef = await addDoc(collection(db, "pins"), pinData);
       console.log("Pin saved with ID:", docRef.id);
+      if (fetchCustomPins) fetchCustomPins();
     } catch (error) {
       console.error("Error saving pin:", error);
     }
@@ -82,8 +87,26 @@ const Map = ({
     }
   };
 
+  const handleMapClick = (e) => {
+    const lat = e.latLng.lat();
+    const lng = e.latLng.lng();
+    console.log("Map instance:", map);
+    console.log("Clicked location:", clickedLocation);
+
+    const clickX = e.domEvent.clientX;
+    const windowWidth = window.innerWidth;
+
+    if (clickX > windowWidth * 0.6) {
+      setDrawerPosition("left");
+    } else {
+      setDrawerPosition("right");
+    }
+
+    setClickedLocation({ lat, lng });
+  };
+
   return (
-    <div className="rounded-md shadow-md overflow-hidden border border-gray-300">
+    <div className="relative rounded-md shadow-md overflow-hidden border border-gray-300">
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={coordinates}
@@ -91,11 +114,7 @@ const Map = ({
         onLoad={onLoad}
         onUnmount={onUnmount}
         onIdle={handleIdle}
-        onClick={(e) => {
-          const lat = e.latLng.lat();
-          const lng = e.latLng.lng();
-          setClickedLocation({ lat, lng });
-        }}
+        onClick={handleMapClick}
         options={{
           disableDefaultUI: true,
           zoomControl: true,
@@ -129,6 +148,44 @@ const Map = ({
             />
           );
         })}
+
+        {customPins?.map((pin, index) => (
+          <Marker
+            key={`custom-${index}`}
+            position={{ lat: pin.lat, lng: pin.lng }}
+            icon={{
+              path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
+              fillColor: "#38bdf8",
+              fillOpacity: 1,
+              strokeWeight: 1,
+              strokeColor: "#fff",
+              scale: 1.5,
+              anchor: new window.google.maps.Point(12, 24),
+            }}
+            onClick={() => setSelectedCustomPin(pin)}
+          />
+        ))}
+
+        {selectedCustomPin && (
+          <InfoWindow
+            position={{
+              lat: selectedCustomPin.lat,
+              lng: selectedCustomPin.lng,
+            }}
+            onCloseClick={() => setSelectedCustomPin(null)}
+          >
+            <div className="w-48 rounded-xl shadow-md bg-gradient-to-br from-sky-200 via-sky-100 to-emerald-100 border border-sky-300">
+              <div className="px-3 py-2">
+                <h3 className="text-sm font-semibold text-sky-800">
+                  {selectedCustomPin.title}
+                </h3>
+                <p className="text-xs text-emerald-700 mt-1 leading-snug">
+                  {selectedCustomPin.description}
+                </p>
+              </div>
+            </div>
+          </InfoWindow>
+        )}
 
         {selectedPlaceIndex !== null && places[selectedPlaceIndex] && (
           <InfoWindow
@@ -180,11 +237,15 @@ const Map = ({
       </GoogleMap>
 
       {clickedLocation && (
-        <AddPinForm
-          location={clickedLocation}
-          onClose={() => setClickedLocation(null)}
-          onSubmit={handlePinSubmit}
-        />
+        <div
+          className={`absolute top-1/2 ${drawerPosition}-0 -translate-y-1/2 w-[320px] bg-gradient-to-br from-white via-sky-50 to-emerald-100 shadow-xl p-4 z-50 rounded-xl border border-sky-200 transition-all duration-300 ease-in-out`}
+        >
+          <AddPinForm
+            location={clickedLocation}
+            onClose={() => setClickedLocation(null)}
+            onSubmit={handlePinSubmit}
+          />
+        </div>
       )}
     </div>
   );

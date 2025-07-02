@@ -5,6 +5,8 @@ import List from "./components/List/List";
 import { getPlacesData } from "./api";
 import throttle from "lodash.throttle";
 import { useLoadScript } from "@react-google-maps/api";
+import { collection, getDocs } from "firebase/firestore";
+import db from "./utils/firebase";
 
 const libraries = ["places"];
 
@@ -16,6 +18,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [type, setType] = useState("4bf58dd8d48988d16d941735");
   const [sortBy, setSortBy] = useState("DISTANCE");
+  const [customPins, setCustomPins] = useState([]);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -44,6 +47,20 @@ const App = () => {
     );
   }, []);
 
+  const fetchCustomPins = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "pins"));
+      const pins = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setCustomPins(pins);
+      console.log("Custom Pins:", pins);
+    } catch (err) {
+      console.error("Failed to fetch pins:", err);
+    }
+  };
+
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       ({ coords: { latitude, longitude } }) => {
@@ -54,6 +71,10 @@ const App = () => {
         setCoordinates({ lat: 51.5072, lng: -0.1276 });
       }
     );
+  }, []);
+
+  useEffect(() => {
+    fetchCustomPins();
   }, []);
 
   useEffect(() => {
@@ -97,6 +118,8 @@ const App = () => {
               bounds={bounds}
               places={places}
               setChildClicked={setChildClicked}
+              customPins={customPins}
+              fetchCustomPins={fetchCustomPins}
             />
           )}
         </div>
