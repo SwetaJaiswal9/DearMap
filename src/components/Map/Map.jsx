@@ -2,6 +2,9 @@ import { GoogleMap, InfoWindow, Marker } from "@react-google-maps/api";
 import { useState, useCallback } from "react";
 import barImg from "../../assets/bar.jpg";
 import { MapPin } from "lucide-react";
+import AddPinForm from "./PinForm";
+import { collection, addDoc } from "firebase/firestore";
+import db from "../../utils/firebase";
 
 const containerStyle = {
   width: "100%",
@@ -18,7 +21,18 @@ const Map = ({
 }) => {
   const [map, setMap] = useState(null);
   const [selectedPlaceIndex, setSelectedPlaceIndex] = useState(null);
+  const [clickedLocation, setClickedLocation] = useState(null);
   //  const markerRef = useRef(null);
+
+  const handlePinSubmit = async (pinData) => {
+    console.log("New Pin Data:", pinData);
+    try {
+      const docRef = await addDoc(collection(db, "pins"), pinData);
+      console.log("Pin saved with ID:", docRef.id);
+    } catch (error) {
+      console.error("Error saving pin:", error);
+    }
+  };
 
   const onLoad = useCallback((mapInstance) => {
     setMap(mapInstance);
@@ -77,6 +91,11 @@ const Map = ({
         onLoad={onLoad}
         onUnmount={onUnmount}
         onIdle={handleIdle}
+        onClick={(e) => {
+          const lat = e.latLng.lat();
+          const lng = e.latLng.lng();
+          setClickedLocation({ lat, lng });
+        }}
         options={{
           disableDefaultUI: true,
           zoomControl: true,
@@ -143,7 +162,30 @@ const Map = ({
             </div>
           </InfoWindow>
         )}
+
+        {clickedLocation && (
+          <Marker
+            position={clickedLocation}
+            icon={{
+              path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
+              fillColor: "#3b82f6",
+              fillOpacity: 1,
+              strokeWeight: 1,
+              strokeColor: "#fff",
+              scale: 1.5,
+              anchor: new window.google.maps.Point(12, 24),
+            }}
+          />
+        )}
       </GoogleMap>
+
+      {clickedLocation && (
+        <AddPinForm
+          location={clickedLocation}
+          onClose={() => setClickedLocation(null)}
+          onSubmit={handlePinSubmit}
+        />
+      )}
     </div>
   );
 };
