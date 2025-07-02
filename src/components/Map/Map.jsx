@@ -21,6 +21,7 @@ const Map = ({
   setChildClicked,
   customPins,
   fetchCustomPins,
+  handleDeletePin,
 }) => {
   const [map, setMap] = useState(null);
   const [selectedPlaceIndex, setSelectedPlaceIndex] = useState(null);
@@ -182,6 +183,22 @@ const Map = ({
                 <p className="text-xs text-emerald-700 mt-1 leading-snug">
                   {selectedCustomPin.description}
                 </p>
+
+                <button
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        "Are you sure you want to delete this pin?"
+                      )
+                    ) {
+                      handleDeletePin(selectedCustomPin.id);
+                      setSelectedCustomPin(null);
+                    }
+                  }}
+                  className="mt-3 text-xs font-medium text-red-600 hover:underline"
+                >
+                  Delete Pin
+                </button>
               </div>
             </div>
           </InfoWindow>

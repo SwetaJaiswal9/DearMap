@@ -5,7 +5,7 @@ import List from "./components/List/List";
 import { getPlacesData } from "./api";
 import throttle from "lodash.throttle";
 import { useLoadScript } from "@react-google-maps/api";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import db from "./utils/firebase";
 
 const libraries = ["places"];
@@ -60,6 +60,15 @@ const App = () => {
       console.error("Failed to fetch pins:", err);
     }
   };
+  const handleDeletePin = async (pinId) => {
+  try {
+    await deleteDoc(doc(db, "pins", pinId));
+    fetchCustomPins();  // refresh pins after delete
+  } catch (err) {
+    console.error("Failed to delete pin:", err);
+  }
+};
+
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -120,6 +129,7 @@ const App = () => {
               setChildClicked={setChildClicked}
               customPins={customPins}
               fetchCustomPins={fetchCustomPins}
+              handleDeletePin={handleDeletePin}
             />
           )}
         </div>
