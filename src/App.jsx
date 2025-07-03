@@ -9,6 +9,8 @@ import db from "./utils/firebase";
 import DiscoveryLayout from "./components/DiscoveryLayout";
 import MemoryLayout from "./components/MemoryLayout";
 import TabSelector from "./components/TabSelector";
+import LoadingScreen from "./components/LoadingScreen";
+import Footer from "./components/Footer";
 
 const libraries = ["places"];
 
@@ -107,11 +109,35 @@ const App = () => {
     }
   }, [bounds, throttledFetchPlaces, type, sortBy]);
 
+  if (!isLoaded) {
+    return <LoadingScreen />;
+  }
+
   return (
     <main className="w-full">
       <Header isLoaded={isLoaded} onPlaceChanged={handlePlaceChanged} />
-      <Hero />
-      <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      <Hero
+        onStart={() => {
+          const el = document.getElementById("tab-section");
+          if (el) el.scrollIntoView({ behavior: "smooth" });
+        }}
+      />
+
+      <div id="tab-section" className="pt-20">
+        <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />
+
+        {activeTab === "discovery" && (
+          <p className="text-center text-sm text-gray-600 italic mb-4">
+            Wander through the map and tap on any location 📍 to discover fun places, cozy corners, and favorite spots around you!
+          </p>
+        )}
+        {activeTab === "memory" && (
+          <p className="text-center text-sm text-gray-600 italic mb-4">
+            Click anywhere on the map to drop a new memory, or tap on a pin ❤️ to view or delete it!
+          </p>
+        )}
+      </div>
 
       {activeTab === "discovery" && (
         <DiscoveryLayout
@@ -142,6 +168,8 @@ const App = () => {
           setBounds={setBounds}
         />
       )}
+
+      <Footer />
     </main>
   );
 };

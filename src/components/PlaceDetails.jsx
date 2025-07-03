@@ -1,16 +1,30 @@
 import { MapPin, Phone } from "lucide-react";
 import { FaGlobe, FaInstagram, FaTwitter } from "react-icons/fa";
 import barImg from "../assets/bar.jpg";
+import gardenImg from "../assets/garden.webp";
+import cafeImg from "../assets/cafe.jpeg";
+import movieImg from "../assets/movie.jpg";
+
+const categoryImages = {
+  "4bf58dd8d48988d16d941735": cafeImg,
+  "4bf58dd8d48988d163941735": gardenImg,
+  "4bf58dd8d48988d17f941735": movieImg,
+  "4bf58dd8d48988d116941735": barImg,
+};
 
 const PlaceDetails = ({ place }) => {
+  const categoryId = place?.categories?.[0]?.fsq_category_id;
+
   const fallbackImage =
     place?.categories?.[0]?.icon?.prefix +
     "bg_120" +
     place?.categories?.[0]?.icon?.suffix;
 
-  const imageSrc = place?.photos?.[0]?.prefix
-    ? `${place.photos[0].prefix}original${place.photos[0].suffix}`
-    : barImg || fallbackImage;
+  const imageSrc =
+    categoryImages[categoryId] ||
+    (place?.photos?.[0]?.prefix
+      ? `${place.photos[0].prefix}original${place.photos[0].suffix}`
+      : fallbackImage);
 
   return (
     <div className="min-w-[280px] max-w-[300px] flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-white via-rose-50 to-emerald-50 shadow-md border border-rose-100 hover:shadow-lg transition-all duration-300">
@@ -27,8 +41,10 @@ const PlaceDetails = ({ place }) => {
 
         <p className="flex items-start gap-2 text-sm text-gray-600 leading-snug min-h-[40px]">
           <MapPin className="text-emerald-500 w-4 h-4 flex-shrink-0 mt-0.5" />
-          <span className="block line-clamp-2 text-ellipsis overflow-hidden">
-            {place?.location?.formatted_address || "Address not available"}
+          <span className="whitespace-nowrap overflow-hidden text-ellipsis block">
+            {(
+              place?.location?.formatted_address || "Address not available"
+            ).trim()}
           </span>
         </p>
 

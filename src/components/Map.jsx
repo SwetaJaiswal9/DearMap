@@ -6,6 +6,7 @@ import AddPinForm from "./PinForm";
 import { collection, addDoc } from "firebase/firestore";
 import db from "../utils/firebase";
 import { motion } from "framer-motion";
+import heartIcon from "../assets/heart_marker.png";
 
 const containerStyle = {
   width: "100%",
@@ -97,7 +98,12 @@ const Map = ({
     const clickX = e.domEvent.clientX;
     const windowWidth = window.innerWidth;
 
-    if (clickX > windowWidth * 0.6) {
+    console.log("ClickX:", clickX);
+console.log("Window Width:", windowWidth);
+console.log("Drawer should be on:", clickX > windowWidth / 2 ? "left" : "right");
+
+
+    if (clickX > windowWidth / 2) {
       setDrawerPosition("left");
     } else {
       setDrawerPosition("right");
@@ -154,14 +160,19 @@ const Map = ({
           <Marker
             key={`custom-${index}`}
             position={{ lat: pin.lat, lng: pin.lng }}
+            // icon={{
+            //   path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
+            //   fillColor: "#38bdf8",
+            //   fillOpacity: 1,
+            //   strokeWeight: 1,
+            //   strokeColor: "#fff",
+            //   scale: 1.5,
+            //   anchor: new window.google.maps.Point(12, 24),
+            // }}
             icon={{
-              path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
-              fillColor: "#38bdf8",
-              fillOpacity: 1,
-              strokeWeight: 1,
-              strokeColor: "#fff",
-              scale: 1.5,
-              anchor: new window.google.maps.Point(12, 24),
+              url: heartIcon,
+              scaledSize: new window.google.maps.Size(36, 36),
+              anchor: new window.google.maps.Point(18, 36),
             }}
             onClick={() => setSelectedCustomPin(pin)}
           />

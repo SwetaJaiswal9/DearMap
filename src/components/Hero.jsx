@@ -66,6 +66,7 @@ const Hero = ({ onStart }) => {
         className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center"
         animate={{ y: [0, 10, 0] }}
         transition={{ repeat: Infinity, duration: 1.8 }}
+        onClick={onStart}
       >
         <ChevronDown className="w-20 h-20 text-rose-400" />
       </motion.div>
