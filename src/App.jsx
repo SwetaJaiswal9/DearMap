@@ -1,13 +1,14 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Header from "./components/Header";
-import Map from "./components/Map";
-import List from "./components/List";
 import Hero from "./components/Hero";
 import { getPlacesData } from "./api";
 import throttle from "lodash.throttle";
 import { useLoadScript } from "@react-google-maps/api";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import db from "./utils/firebase";
+import DiscoveryLayout from "./components/DiscoveryLayout";
+import MemoryLayout from "./components/MemoryLayout";
+import TabSelector from "./components/TabSelector";
 
 const libraries = ["places"];
 
@@ -20,6 +21,8 @@ const App = () => {
   const [type, setType] = useState("4bf58dd8d48988d16d941735");
   const [sortBy, setSortBy] = useState("DISTANCE");
   const [customPins, setCustomPins] = useState([]);
+
+  const [activeTab, setActiveTab] = useState("discovery");
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -61,6 +64,7 @@ const App = () => {
       console.error("Failed to fetch pins:", err);
     }
   };
+
   const handleDeletePin = async (pinId) => {
     try {
       await deleteDoc(doc(db, "pins", pinId));
@@ -88,6 +92,7 @@ const App = () => {
 
   useEffect(() => {
     if (
+      activeTab === "discovery" &&
       bounds?.sw &&
       bounds?.ne &&
       bounds.sw.lat !== 0 &&
@@ -97,6 +102,7 @@ const App = () => {
       coordinates.lat !== 0 &&
       coordinates.lng !== 0
     ) {
+      setIsLoading(true);
       throttledFetchPlaces(bounds.sw, bounds.ne, type, sortBy);
     }
   }, [bounds, throttledFetchPlaces, type, sortBy]);
@@ -105,36 +111,37 @@ const App = () => {
     <main className="w-full">
       <Header isLoaded={isLoaded} onPlaceChanged={handlePlaceChanged} />
       <Hero />
+      <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <div className="flex flex-col md:flex-row gap-6 px-4 mt-6">
-        <div className="md:w-1/3 w-full">
-          <List
-            places={places}
-            childClicked={childClicked}
-            isLoading={isLoading}
-            type={type}
-            setType={setType}
-            sortBy={sortBy}
-            setSortBy={setSortBy}
-          />
-        </div>
+      {activeTab === "discovery" && (
+        <DiscoveryLayout
+          isLoaded={isLoaded}
+          coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          bounds={bounds}
+          setBounds={setBounds}
+          places={places}
+          isLoading={isLoading}
+          type={type}
+          setType={setType}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          childClicked={childClicked}
+          setChildClicked={setChildClicked}
+        />
+      )}
 
-        <div className="md:w-2/3 w-full">
-          {isLoaded && (
-            <Map
-              setCoordinates={setCoordinates}
-              setBounds={setBounds}
-              coordinates={coordinates}
-              bounds={bounds}
-              places={places}
-              setChildClicked={setChildClicked}
-              customPins={customPins}
-              fetchCustomPins={fetchCustomPins}
-              handleDeletePin={handleDeletePin}
-            />
-          )}
-        </div>
-      </div>
+      {activeTab === "memory" && (
+        <MemoryLayout
+          isLoaded={isLoaded}
+          coordinates={coordinates}
+          setCoordinates={setCoordinates}
+          customPins={customPins}
+          handleDeletePin={handleDeletePin}
+          fetchCustomPins={fetchCustomPins}
+          setBounds={setBounds}
+        />
+      )}
     </main>
   );
 };

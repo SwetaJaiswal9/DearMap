@@ -18,13 +18,11 @@ const Hero = ({ onStart }) => {
   return (
     <div className="h-[92vh] flex flex-col md:flex-row bg-gradient-to-br from-rose-50 via-white to-emerald-100 relative overflow-hidden">
       
-      {/* ☁️ Floating Clouds */}
       <FloatingCloud top={5} left={5} size={"180px"} delay={0} />
       <FloatingCloud top={12} left={32} size={"260px"} delay={2} />
       <FloatingCloud top={10} left={78} size={"140px"} delay={1} />
       <FloatingCloud top={40} left={48} size={"110px"} delay={3} />
 
-      {/* 💖 Left Text */}
       <div className="flex-1 flex flex-col justify-center items-start px-10 py-20 z-10">
         <motion.h1
           className="text-5xl md:text-6xl font-extrabold text-rose-400 drop-shadow-md"
@@ -54,7 +52,6 @@ const Hero = ({ onStart }) => {
         </motion.button>
       </div>
 
-      {/* 🗺️ Right-side Map */}
       <div className="flex-1 flex justify-center items-center px-10 py-10 relative z-10">
         <motion.img
           src={mapImg}
@@ -65,7 +62,6 @@ const Hero = ({ onStart }) => {
         />
       </div>
 
-      {/* ⬇️ Scroll Down Arrow */}
       <motion.div
         className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center"
         animate={{ y: [0, 10, 0] }}

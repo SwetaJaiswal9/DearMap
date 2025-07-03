@@ -8,63 +8,88 @@ const PlaceDetails = ({ place }) => {
     "bg_120" +
     place?.categories?.[0]?.icon?.suffix;
 
+  const imageSrc = place?.photos?.[0]?.prefix
+    ? `${place.photos[0].prefix}original${place.photos[0].suffix}`
+    : barImg || fallbackImage;
+
   return (
-    <div className="rounded-2xl overflow-hidden bg-white shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 transition-all duration-300 hover:shadow-[0_6px_30px_rgba(0,0,0,0.1)]">
+    <div className="min-w-[280px] max-w-[300px] flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-white via-rose-50 to-emerald-50 shadow-md border border-rose-100 hover:shadow-lg transition-all duration-300">
       <img
-        src={barImg || fallbackImage}
+        src={imageSrc}
         alt={place?.name}
-        className="w-full h-[220px] object-cover"
+        className="w-full h-[160px] object-cover"
       />
 
       <div className="p-4 space-y-2">
-        <h2 className="text-lg font-semibold text-gray-800">{place?.name}</h2>
+        <h2 className="text-base font-semibold text-gray-800 truncate">
+          {place?.name}
+        </h2>
 
-        {place?.location?.formatted_address && (
-          <p className="flex items-center gap-1 text-sm text-gray-600">
-            <MapPin className="text-emerald-500 w-4 h-4" />
-            {place.location.formatted_address}
-          </p>
-        )}
+        <p className="flex items-start gap-2 text-sm text-gray-600 leading-snug min-h-[40px]">
+          <MapPin className="text-emerald-500 w-4 h-4 flex-shrink-0 mt-0.5" />
+          <span className="block line-clamp-2 text-ellipsis overflow-hidden">
+            {place?.location?.formatted_address || "Address not available"}
+          </span>
+        </p>
 
-        {place?.tel && (
+        {place?.tel ? (
           <p className="flex items-center gap-1 text-sm text-gray-600">
             <Phone className="text-emerald-500 w-4 h-4" />
             {place.tel}
           </p>
-        )}
-
-        {place?.distance && (
-          <p className="text-sm text-gray-500">
-            {(place.distance / 1000).toFixed(1)} km away
+        ) : (
+          <p className="flex items-center gap-1 text-sm text-gray-400 italic">
+            <Phone className="text-gray-300 w-4 h-4" />
+            Not available
           </p>
         )}
 
-        {place?.categories?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2">
-            {place.categories.map((cat) => (
-              <span
-                key={cat.fsq_category_id}
-                className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full"
-              >
-                {cat.name}
-              </span>
-            ))}
-          </div>
-        )}
+        <p className="text-sm text-gray-500 italic min-h-[20px]">
+          {place?.distance
+            ? `${(place.distance / 1000).toFixed(1)} km away`
+            : "Distance not available"}
+        </p>
+
+        <div className="flex flex-wrap gap-2 mt-2 min-h-[24px]">
+          {place?.categories?.length > 0 ? (
+            <>
+              {place.categories.slice(0, 3).map((cat) => (
+                <span
+                  key={cat.fsq_category_id}
+                  className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full"
+                >
+                  {cat.name}
+                </span>
+              ))}
+              {place.categories.length > 3 && (
+                <span className="text-[10px] text-gray-400 italic">
+                  +{place.categories.length - 3} more
+                </span>
+              )}
+            </>
+          ) : (
+            <span className="text-[10px] text-gray-400 italic">
+              No category info
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Action Buttons */}
       {(place?.website || place?.social_media) && (
-        <div className="flex gap-4 p-4 pt-2 border-t border-gray-100 justify-end items-center text-sm">
-          {place?.website && (
+        <div className="flex gap-3 px-4 pb-3 pt-2 border-t border-gray-100 justify-start items-center text-xs text-gray-600">
+          {place?.website ? (
             <a
               href={place.website}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline flex items-center gap-1"
             >
-              <FaGlobe /> Website
+              <FaGlobe className="w-3 h-3" /> Website
             </a>
+          ) : (
+            <span className="text-xs text-gray-400 italic">
+              Website: Not available
+            </span>
           )}
           {place?.social_media?.instagram && (
             <a
@@ -73,7 +98,7 @@ const PlaceDetails = ({ place }) => {
               rel="noopener noreferrer"
               className="text-pink-500 hover:underline flex items-center gap-1"
             >
-              <FaInstagram /> Instagram
+              <FaInstagram className="w-3 h-3" /> Insta
             </a>
           )}
           {place?.social_media?.twitter && (
@@ -83,7 +108,7 @@ const PlaceDetails = ({ place }) => {
               rel="noopener noreferrer"
               className="text-blue-500 hover:underline flex items-center gap-1"
             >
-              <FaTwitter /> Twitter
+              <FaTwitter className="w-3 h-3" /> Twitter
             </a>
           )}
         </div>
