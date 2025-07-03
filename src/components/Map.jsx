@@ -1,12 +1,13 @@
 import { GoogleMap, InfoWindow, Marker } from "@react-google-maps/api";
 import { useState, useCallback } from "react";
-import barImg from "../assets/bar.jpg";
+import cafeImg from "../assets/cafe.jpeg";
 import { MapPin } from "lucide-react";
 import AddPinForm from "./PinForm";
 import { collection, addDoc } from "firebase/firestore";
 import db from "../utils/firebase";
 import { motion } from "framer-motion";
 import heartIcon from "../assets/heart_marker.png";
+import { Wine } from "lucide-react";
 
 const containerStyle = {
   width: "100%",
@@ -99,9 +100,11 @@ const Map = ({
     const windowWidth = window.innerWidth;
 
     console.log("ClickX:", clickX);
-console.log("Window Width:", windowWidth);
-console.log("Drawer should be on:", clickX > windowWidth / 2 ? "left" : "right");
-
+    console.log("Window Width:", windowWidth);
+    console.log(
+      "Drawer should be on:",
+      clickX > windowWidth / 2 ? "left" : "right"
+    );
 
     if (clickX > windowWidth / 2) {
       setDrawerPosition("left");
@@ -224,11 +227,15 @@ console.log("Drawer should be on:", clickX > windowWidth / 2 ? "left" : "right")
             onCloseClick={() => setSelectedPlaceIndex(null)}
           >
             <div className="w-48 rounded-md shadow-md bg-white overflow-hidden border border-gray-200">
-              <img
-                src={barImg}
+              {/* <img
+                src={cafeImg}
                 alt={places[selectedPlaceIndex].name}
                 className="w-full h-24 object-cover"
-              />
+              /> */}
+
+              <div className="flex justify-center items-center mb-2">
+                <Wine className="w-10 h-10 text-rose-400" />
+              </div>
 
               <div className="px-2 py-1.5">
                 <h3 className="text-xs font-semibold text-gray-800 truncate">
