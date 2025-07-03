@@ -2,7 +2,7 @@ import axios from "axios";
 
 // const URL = `${import.meta.env.VITE_DEARMAP_SERVER}/api/places/search`;
 
-const URL = "https://dearmap-server-production.up.railway.app";
+const URL = "https://dearmap-server-production.up.railway.app/api/places/search";
 
 const toRad = (value) => (value * Math.PI) / 180;
 
@@ -23,7 +23,7 @@ export const getPlacesData = async (
   selectedType = "4bf58dd8d48988d16d941735",
   selectedSortBy = "DISTANCE"
 ) => {
-  console.log("API URL: ", "https://dearmap-server-production.up.railway.app");
+  console.log("API URL: ", "https://dearmap-server-production.up.railway.app/api/places/search");
   if (
     !sw ||
     !ne ||
