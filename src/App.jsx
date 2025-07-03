@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
-import Header from "./components/Header/Header";
-import Map from "./components/Map/Map";
-import List from "./components/List/List";
+import Header from "./components/Header";
+import Map from "./components/Map";
+import List from "./components/List";
+import Hero from "./components/Hero";
 import { getPlacesData } from "./api";
 import throttle from "lodash.throttle";
 import { useLoadScript } from "@react-google-maps/api";
@@ -61,14 +62,13 @@ const App = () => {
     }
   };
   const handleDeletePin = async (pinId) => {
-  try {
-    await deleteDoc(doc(db, "pins", pinId));
-    fetchCustomPins();  // refresh pins after delete
-  } catch (err) {
-    console.error("Failed to delete pin:", err);
-  }
-};
-
+    try {
+      await deleteDoc(doc(db, "pins", pinId));
+      fetchCustomPins();
+    } catch (err) {
+      console.error("Failed to delete pin:", err);
+    }
+  };
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -104,6 +104,7 @@ const App = () => {
   return (
     <main className="w-full">
       <Header isLoaded={isLoaded} onPlaceChanged={handlePlaceChanged} />
+      <Hero />
 
       <div className="flex flex-col md:flex-row gap-6 px-4 mt-6">
         <div className="md:w-1/3 w-full">

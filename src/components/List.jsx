@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import PlaceDetails from "../PlaceDetails/PlaceDetails";
+import PlaceDetails from "./PlaceDetails";
 import { motion } from "framer-motion";
 
 const List = ({

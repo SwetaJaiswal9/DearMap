@@ -1,10 +1,10 @@
 import { GoogleMap, InfoWindow, Marker } from "@react-google-maps/api";
 import { useState, useCallback } from "react";
-import barImg from "../../assets/bar.jpg";
+import barImg from "../assets/bar.jpg";
 import { MapPin } from "lucide-react";
 import AddPinForm from "./PinForm";
 import { collection, addDoc } from "firebase/firestore";
-import db from "../../utils/firebase";
+import db from "../utils/firebase";
 import { motion } from "framer-motion";
 
 const containerStyle = {

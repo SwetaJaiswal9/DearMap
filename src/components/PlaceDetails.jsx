@@ -1,6 +1,6 @@
 import { MapPin, Phone } from "lucide-react";
 import { FaGlobe, FaInstagram, FaTwitter } from "react-icons/fa";
-import barImg from "../../assets/bar.jpg";
+import barImg from "../assets/bar.jpg";
 
 const PlaceDetails = ({ place }) => {
   const fallbackImage =
