@@ -124,7 +124,7 @@ const App = () => {
         }}
       />
 
-      <div id="tab-section" className="pt-20">
+      <div id="tab-section" className="-mt-21 pt-21">
         <TabSelector activeTab={activeTab} setActiveTab={setActiveTab} />
 
         {activeTab === "discovery" && (
