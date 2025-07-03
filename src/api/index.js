@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const URL = "/api/places/search";
+const URL = `${import.meta.env.VITE_DEARMAP_SERVER}/api/places/search`;
 
 const toRad = (value) => (value * Math.PI) / 180;
 
