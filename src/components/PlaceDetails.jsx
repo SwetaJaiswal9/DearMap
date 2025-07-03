@@ -1,6 +1,6 @@
 import { MapPin, Phone } from "lucide-react";
 import { FaGlobe, FaInstagram, FaTwitter } from "react-icons/fa";
-import barImg from "../assets/bar.jpg";
+// import barImg from "../assets/bar.jpg";
 import gardenImg from "../assets/garden.webp";
 import cafeImg from "../assets/cafe.jpeg";
 import movieImg from "../assets/movie.jpg";
@@ -9,7 +9,7 @@ const categoryImages = {
   "4bf58dd8d48988d16d941735": cafeImg,
   "4bf58dd8d48988d163941735": gardenImg,
   "4bf58dd8d48988d17f941735": movieImg,
-  "4bf58dd8d48988d116941735": barImg,
+  "4bf58dd8d48988d116941735": cafeImg,
 };
 
 const PlaceDetails = ({ place }) => {
