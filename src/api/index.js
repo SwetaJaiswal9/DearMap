@@ -21,6 +21,7 @@ export const getPlacesData = async (
   selectedType = "4bf58dd8d48988d16d941735",
   selectedSortBy = "DISTANCE"
 ) => {
+  console.log("API URL: ", import.meta.env.VITE_DEARMAP_SERVER);
   if (
     !sw ||
     !ne ||
