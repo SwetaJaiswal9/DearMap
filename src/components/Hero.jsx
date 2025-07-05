@@ -23,7 +23,7 @@ const Hero = ({ onStart }) => {
       <FloatingCloud top={10} left={78} size={"140px"} delay={1} />
       <FloatingCloud top={40} left={48} size={"110px"} delay={3} />
 
-      <div className="flex-1 flex flex-col justify-center items-center md:items-start px-10 py-20 z-10">
+      <div className="flex-1 flex flex-col justify-center items-center md:items-start px-10 pb-20 z-10">
         <motion.h1
           className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-rose-400 drop-shadow-md text-center md:text-left"
           initial={{ y: 40, opacity: 0 }}
